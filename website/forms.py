@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, BooleanField , PasswordField, validators
+from wtforms import Form, StringField, BooleanField , PasswordField, IntegerField, validators
 
 class RegistrationForm(Form):
     name = StringField('Name',[validators.Length(min=1,max=50)])
@@ -24,3 +24,4 @@ class PasswordForm(Form):
     url = StringField('Aplication/Site URL',[validators.Length(min=6,max=50)])
     email = StringField('Email',[validators.Length(min=6,max=50)])
     username = StringField('username (If necessarily)')
+    length = IntegerField('Password length',[validators.DataRequired()]) # Maybe select field??
