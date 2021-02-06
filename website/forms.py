@@ -25,8 +25,3 @@ class PasswordForm(Form):
     email = StringField('Email',[validators.Length(min=6,max=50)])
     username = StringField('username (If necessarily)')
     length = IntegerField('Password length',[validators.DataRequired()]) # Maybe select field??
-
-
-class SearchPasswordForm(Form):
-    name = StringField('Aplication/Site Name or URL',[validators.Length(min=6,max=50)])
-    choice = SelectField('Select',choices=[('app_name', 'Name aplication or site'), ('url', 'URL')])
