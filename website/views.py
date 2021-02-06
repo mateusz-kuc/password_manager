@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from website.models import Data
-from website.forms import PasswordForm
-from flask_login import current_user
+from website.forms import PasswordForm, SearchPasswordForm
+from flask_login import current_user, login_required
 from . import db
+from website.models import User, Data
 import random
 def password_create(length):
     created_password = ''
@@ -24,6 +25,7 @@ views = Blueprint('views',__name__)
 def home():
     return render_template('home.html')
 
+@login_required
 @views.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html')
@@ -38,3 +40,12 @@ def create_new_password():
         flash(f'You generate new password for {form.name.data}, and it is {created_password} ', 'success')
         return redirect(url_for("views.dashboard"))
     return render_template('create_new_password.html', form=form)
+
+@login_required
+@views.route('/search_password')
+def search_password():
+    form = SearchPasswordForm()
+    if request.method == "POST" and form.validate():
+        pass
+
+    return render_template('search_password.html',form=form)

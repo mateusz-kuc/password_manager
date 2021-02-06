@@ -7,6 +7,8 @@ auth = Blueprint('auth',__name__)
 
 @auth.route('/register', methods=['GET' ,'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.dashboard'))
     form = RegistrationForm(request.form)
     if request.method == "POST" and form.validate():
         check_username = User.query.filter_by(username=form.username.data).first()
@@ -30,6 +32,8 @@ def register():
 
 @auth.route('/login', methods=['GET' ,'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('views.dashboard'))
     form = LoginForm(request.form)
     if request.method == "POST" and form.validate():
         user = User.query.filter_by(email=form.email.data).first()
@@ -40,3 +44,8 @@ def login():
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', form=form)
+
+@auth.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('views.home'))
