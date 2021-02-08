@@ -83,9 +83,9 @@ def update(id):
     form = PasswordForm()
     if request.method == "POST":
         saved.username = form.username.data
-        saved.email = form.email.data
-        saved.app_name = form.name.data
-        saved.url = form.url.data
+        #saved.email = form.email.data
+        #saved.app_name = form.name.data
+        #saved.url = form.url.data
         print("Zapisuje")
         db.session.commit()
         flash('Your data has been updated !','success')
@@ -98,6 +98,19 @@ def update(id):
         form.length.data = len(saved.password)
     return render_template('create_new_password.html',form=form)
 """
+@login_required
+@views.route('/update/<int:id>')
+def update(id):
+    saved = Data.query.get_or_404(id)
+    if saved.datas != current_user:
+        abort(403)
+    new_password = password_create(len(saved.password))
+    saved.password = new_password
+    db.session.commit()
+    pyperclip.copy(new_password)
+    flash('New password has been generated and copied !', 'success')
+    return redirect(url_for("views.dashboard"))
+
 @login_required
 @views.route('/search_by_email',methods=['GET','POST'])
 def search_by_email():
