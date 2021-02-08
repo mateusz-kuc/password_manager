@@ -46,14 +46,67 @@ def create_new_password():
 @login_required
 @views.route('/search_password', methods=['GET' ,'POST'])
 def search_password():
-
+    title ="What page are you looking for the password for ?"
     if request.method == "POST":
-        print("Działa")
-        print(request.form['name'])
         user = User.query.filter_by(username=current_user.username).first_or_404()
         search = Data.query.filter_by(datas=user, app_name=request.form['name'])
 
-        return render_template('search_password.html',search=search)
+        return render_template('search_password.html',search=search, title= title)
 
 
-    return render_template('search_password.html')
+    return render_template('search_password.html', title=title)
+@login_required
+@views.route('/copied/<string:password>')
+def copied(password):
+    pyperclip.copy(password)
+    flash('Your password has been copied', 'success')
+    return redirect(url_for('views.dashboard'))
+
+
+@login_required
+@views.route('delete/<int:id>')
+def delete_password(id):
+    saved = Data.query.get_or_404(id)
+    if saved.datas != current_user:
+        abort(403)
+    db.session.delete(saved)
+    db.session.commit()
+    flash('Your saved recipe has been deleted from your list!', 'success')
+    return redirect(url_for('views.search_password'))
+"""
+@login_required
+@views.route('/update/<int:id>', methods=['GET','POST'])
+def update(id):
+    saved = Data.query.get_or_404(id)
+    if saved.datas != current_user:
+        abort(403)
+    form = PasswordForm()
+    if request.method == "POST":
+        saved.username = form.username.data
+        saved.email = form.email.data
+        saved.app_name = form.name.data
+        saved.url = form.url.data
+        print("Zapisuje")
+        db.session.commit()
+        flash('Your data has been updated !','success')
+        return redirect(url_for('views.dashboard'))
+    elif request.method == 'GET':
+        form.username.data = saved.username
+        form.email.data = saved.email
+        form.name.data = saved.username
+        form.url.data = saved.url
+        form.length.data = len(saved.password)
+    return render_template('create_new_password.html',form=form)
+"""
+@login_required
+@views.route('/search_by_email',methods=['GET','POST'])
+def search_by_email():
+    title = "What email are you looking for"
+    if request.method == "POST":
+        user = User.query.filter_by(username=current_user.username).first_or_404()
+        search = Data.query.filter_by(datas=user, email=request.form['name'])
+
+        return render_template('search_password.html',search=search,title=title)
+
+
+    return render_template('search_password.html', title=title)
