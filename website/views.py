@@ -65,6 +65,7 @@ def search_password():
 
 
     return render_template('search_password.html', title=title)
+
 @login_required
 @views.route('/copied/<string:password>')
 def copied(password):
@@ -83,31 +84,7 @@ def delete_password(id):
     db.session.commit()
     flash('Your saved recipe has been deleted from your list!', 'success')
     return redirect(url_for('views.search_password'))
-"""
-@login_required
-@views.route('/update/<int:id>', methods=['GET','POST'])
-def update(id):
-    saved = Data.query.get_or_404(id)
-    if saved.datas != current_user:
-        abort(403)
-    form = PasswordForm()
-    if request.method == "POST":
-        saved.username = form.username.data
-        #saved.email = form.email.data
-        #saved.app_name = form.name.data
-        #saved.url = form.url.data
-        print("Zapisuje")
-        db.session.commit()
-        flash('Your data has been updated !','success')
-        return redirect(url_for('views.dashboard'))
-    elif request.method == 'GET':
-        form.username.data = saved.username
-        form.email.data = saved.email
-        form.name.data = saved.username
-        form.url.data = saved.url
-        form.length.data = len(saved.password)
-    return render_template('create_new_password.html',form=form)
-"""
+
 @login_required
 @views.route('/update/<int:id>')
 def update(id):
