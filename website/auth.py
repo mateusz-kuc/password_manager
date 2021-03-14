@@ -26,7 +26,7 @@ def register():
             db.session.add(user)
             db.session.commit()
             flash(f'Account created for {form.username.data}!', 'success')
-            return redirect(url_for('login'))
+            return redirect(url_for('auth.login'))
 
     return render_template('register.html',form=form)
 
