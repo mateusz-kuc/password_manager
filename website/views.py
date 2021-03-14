@@ -34,13 +34,23 @@ def dashboard():
 def create_new_password():
     form = PasswordForm(request.form)
     if request.method == "POST" and form.validate():
-        created_password = password_create(form.length.data)
+        created_password = password_create(int(form.length.data))
         pyperclip.copy(created_password)
-        new_password = Data(username=form.username.data,email=form.email.data,password=created_password,app_name=form.name.data,url=form.url.data,user_id=current_user.id)
-        db.session.add(new_password)
-        db.session.commit()
-        flash(f'You generate new password for {form.name.data}, and it is {created_password} ', 'success')
-        return redirect(url_for("views.dashboard"))
+        # check that this email dont have already account in this site or application
+        user = User.query.filter_by(username=current_user.username).first_or_404()
+        search = Data.query.filter_by(datas=user, app_name=request.form['name'])
+        for element in search:
+
+            if element.email==form.email.data and element.app_name==form.name.data:
+                flash(f'You already have account with this email in this aplication!! Your password for this mail has been copied', 'danger')
+                pyperclip.copy(element.password)
+                return redirect(url_for("views.dashboard"))
+        else:
+            new_password = Data(username=form.username.data,email=form.email.data,password=created_password,app_name=form.name.data,url=form.url.data,user_id=current_user.id)
+            db.session.add(new_password)
+            db.session.commit()
+            flash(f'You generate new password for {form.name.data}, and it is {created_password} ', 'success')
+            return redirect(url_for("views.dashboard"))
     return render_template('create_new_password.html', form=form)
 
 @login_required
